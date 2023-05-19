@@ -18,7 +18,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/account")
-    public CreateAccount.Response createAccount(
+    public synchronized CreateAccount.Response createAccount(
             @RequestBody @Valid CreateAccount.Request request
     ) {
         return CreateAccount.Response.from(
@@ -53,13 +53,5 @@ public class AccountController {
                         .build())
                 .collect(Collectors.toList());
     }
-
-
-
-    @GetMapping("/account/{id}")
-    public Account getAccount(@PathVariable Long id) {
-        return accountService.getAccount(id);
-    }
-
 
 }

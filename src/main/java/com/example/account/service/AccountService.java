@@ -9,6 +9,7 @@ import com.example.account.respository.AccountRepository;
 import com.example.account.respository.AccountUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -21,21 +22,18 @@ import static com.example.account.type.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService {
     private final AccountRepository accountRepository;
     private final AccountUserRepository accountUserRepository;
 
-    /**
-     * 사용자가 있는지 조회
-     * 계좌번호를 생성하고
-     * 계좌를 저장하고, 그 정보를 넘긴다
-     */
-    @Transactional
-    public AccountDto createAccount(Long userId, Long initialBalance) {
-        AccountUser accountUser = getAccountUser(userId);
+
+    /** 계좌 생성 */
+    public synchronized AccountDto createAccount(Long userId, Long initialBalance) {
+        AccountUser accountUser = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
 
         validateCreateAccount(accountUser);
-
 
         String newAccountNumber = accountRepository.findFirstByOrderByIdDesc()
                 .map(account -> (Integer.parseInt(account.getAccountNumber())) + 1 + "")
@@ -54,7 +52,7 @@ public class AccountService {
 
     }
 
-    @Transactional
+    /** 계좌 해지 */
     public AccountDto deleteAccount(Long userId, String accountNumber) {
         AccountUser accountUser = getAccountUser(userId);
 
@@ -70,7 +68,9 @@ public class AccountService {
 
         return AccountDto.fromEntity(account);
     }
-    @Transactional
+
+    /** 계좌 확인*/
+    @Transactional(readOnly = true)
     public List<AccountDto> getAccountsByUserId(Long userId) {
         AccountUser accountUser = getAccountUser(userId);
 
@@ -78,19 +78,16 @@ public class AccountService {
                 .stream().map(AccountDto::fromEntity)
                 .collect(Collectors.toList());
     }
-    @Transactional
-    public Account getAccount(Long id) {
-        return accountRepository.findById(id).get();
-    }
 
 
-    private AccountUser getAccountUser(Long userId) {
+    public AccountUser getAccountUser(Long userId) {
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
         return accountUser;
     }
 
-    private void validateDeleteAccount(AccountUser accountUser, Account account) {
+
+    public void validateDeleteAccount(AccountUser accountUser, Account account) {
         if (!Objects.equals(accountUser.getId(), account.getAccountUser().getId())) {
             throw new AccountException(USER_ACCOUNT_UN_MATCH);
         }
@@ -103,7 +100,7 @@ public class AccountService {
         }
     }
 
-    private void validateCreateAccount(AccountUser accountUser) {
+    public void validateCreateAccount(AccountUser accountUser) {
         if (accountRepository.countByAccountUser(accountUser) >= 10) {
             throw new AccountException(MAX_ACCOUNT_PER_USER_10);
         }
