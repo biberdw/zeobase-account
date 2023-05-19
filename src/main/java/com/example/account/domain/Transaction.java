@@ -11,6 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static javax.persistence.EnumType.*;
+import static javax.persistence.FetchType.*;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,12 +22,12 @@ import java.time.LocalDateTime;
 @Entity
 public class Transaction extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private TransactionType transactionType;
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private TransactionResultType transactionResultType;
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Account account;
     private Long amount;
 

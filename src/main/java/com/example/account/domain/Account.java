@@ -13,6 +13,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static com.example.account.type.ErrorCode.*;
+import static javax.persistence.EnumType.*;
+import static javax.persistence.FetchType.*;
 
 @Getter
 @Setter
@@ -22,12 +24,12 @@ import static com.example.account.type.ErrorCode.*;
 @Entity
 public class Account extends BaseEntity{
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private AccountUser accountUser;
 
     private String accountNumber;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private AccountStatus accountStatus;
 
     private Long balance;
