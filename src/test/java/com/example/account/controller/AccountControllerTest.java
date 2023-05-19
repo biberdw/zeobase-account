@@ -8,6 +8,7 @@ import com.example.account.dto.CreateAccount;
 import com.example.account.dto.DeleteAccount;
 import com.example.account.service.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,6 +40,7 @@ class AccountControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @DisplayName("계좌 생성")
     public void successCreateAccount() throws Exception {
         //given
         given(accountService.createAccount(anyLong(), anyLong()))
@@ -65,6 +67,7 @@ class AccountControllerTest {
     }
 
     @Test
+    @DisplayName("계좌 해지")
     public void successDeleteAccount() throws Exception {
         //given
         given(accountService.deleteAccount(anyLong(), anyString()))
@@ -92,6 +95,7 @@ class AccountControllerTest {
 
 
     @Test
+    @DisplayName("계좌 확인")
     public void successGetAccountsByUserId() throws Exception {
         //given
         given(accountService.getAccountsByUserId(anyLong()))
@@ -126,38 +130,4 @@ class AccountControllerTest {
     }
 
 
-    @Test
-    public void successGetAccount() throws Exception {
-        //given
-        given(accountService.getAccount(anyLong()))
-                .willReturn(Account.builder()
-                        .accountNumber("3456")
-                        .accountStatus(AccountStatus.IN_USE)
-                        .build());
-        //when
-        mockMvc.perform(get("/account/876"))
-                .andDo(print())
-                .andExpect(jsonPath("$.accountNumber").value("3456"))
-                .andExpect(jsonPath("$.accountStatus").value("IN_USE"))
-                .andExpect(status().isOk());
-
-
-        //then
-    }
-
-    @Test
-    public void failGetAccount() throws Exception {
-        //given
-        given(accountService.getAccount(anyLong()))
-                .willThrow(new AccountException(ACCOUNT_NOT_FOUND));
-        //when
-        mockMvc.perform(get("/account/876"))
-                .andDo(print())
-                .andExpect(jsonPath("$.errorCode").value(ACCOUNT_NOT_FOUND.name()))
-                .andExpect(jsonPath("$.errorMessage").value(ACCOUNT_NOT_FOUND.getDescription()))
-                .andExpect(status().isOk());
-
-
-        //then
-    }
 }

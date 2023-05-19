@@ -6,6 +6,7 @@ import com.example.account.dto.TransactionDto;
 import com.example.account.dto.UseBalance;
 import com.example.account.service.TransactionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ class TransactionControllerTest {
 
 
     @Test
+    @DisplayName("잔액 사용")
     public void successUseBalance() throws Exception{
         //given
         BDDMockito.given(transactionService.useBalance(anyLong(), anyString(), anyLong()))
@@ -69,6 +71,7 @@ class TransactionControllerTest {
     }
 
     @Test
+    @DisplayName("잔액 사용 취소")
     public void successCancelBalance() throws Exception{
         //given
         BDDMockito.given(transactionService.cancelBalance(anyString(), anyString(), anyLong()))
@@ -99,6 +102,7 @@ class TransactionControllerTest {
 
 
     @Test
+    @DisplayName("거래 확인")
     public void successQueryTransaction() throws Exception {
         //given
         given(transactionService.queryTransaction(anyString()))

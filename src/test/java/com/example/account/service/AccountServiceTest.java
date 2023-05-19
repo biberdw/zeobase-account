@@ -16,10 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
+import static com.example.account.type.AccountStatus.IN_USE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,6 +44,7 @@ class AccountServiceTest {
 
 
     @Test
+    @DisplayName("게좌 생성 성공")
     public void createAccountSuccess() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -330,4 +334,5 @@ class AccountServiceTest {
         //then
         assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
     }
+
 }

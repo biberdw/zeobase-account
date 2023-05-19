@@ -30,18 +30,14 @@ import static com.example.account.type.TransactionType.USE;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final AccountUserRepository accountUserRepository;
     private final AccountRepository accountRepository;
 
-    /**
-     * 사용자가 없는 경우, 사용자 아이디와 계좌 소유주가 다른 경우,
-     * 계좌가 이미 해지 상태인 경우, 거래금액이 잔액보다 큰 경우,
-     * 거래금액이 너무 작거나 큰 경우 실패 응답
-     */
-    @Transactional
+    /** 잔액 사용 */
     public TransactionDto useBalance(Long userId, String accountNumber,
                                      Long amount) {
 
@@ -57,8 +53,7 @@ public class TransactionService {
         return TransactionDto.fromEntity(saveAndGetTransaction(USE, S, amount, account));
     }
 
-
-    @Transactional
+    /** 잔액사용 실패 */
     public void saveFailedUseTransaction(String accountNumber, Long amount) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
@@ -66,7 +61,7 @@ public class TransactionService {
         saveAndGetTransaction(USE, F, amount, account);
     }
 
-    @Transactional
+    /** 잔액사용 취소 */
     public TransactionDto cancelBalance(
             String transactionId,
             String accountNumber,
@@ -86,12 +81,21 @@ public class TransactionService {
         );
     }
 
-    @Transactional
+    /** 잔액사용 취소 실패 */
     public void saveFailedCancelTransaction(String accountNumber, Long amount) {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
 
         saveAndGetTransaction(CANCEL, F, amount, account);
+    }
+
+    /** 거래 확인 */
+    @Transactional(readOnly = true)
+    public TransactionDto queryTransaction(String transactionId) {
+        return TransactionDto.fromEntity(
+                transactionRepository.findByTransactionId(transactionId)
+                        .orElseThrow(() -> new AccountException(TRANSACTION_NOT_FOUND))
+        );
     }
 
     private void validateCancelBalance(Transaction transaction, Account account, Long amount) {
@@ -133,15 +137,6 @@ public class TransactionService {
                         .transactionId(UUID.randomUUID().toString().replace("-", ""))
                         .transactedAt(LocalDateTime.now())
                         .build()
-        );
-    }
-
-
-    @Transactional(readOnly = true)
-    public TransactionDto queryTransaction(String transactionId) {
-        return TransactionDto.fromEntity(
-                transactionRepository.findByTransactionId(transactionId)
-                .orElseThrow(() -> new AccountException(TRANSACTION_NOT_FOUND))
         );
     }
 
