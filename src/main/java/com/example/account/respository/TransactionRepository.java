@@ -4,6 +4,7 @@ package com.example.account.respository;
 import com.example.account.domain.Account;
 import com.example.account.domain.AccountUser;
 import com.example.account.domain.Transaction;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+    @EntityGraph(attributePaths = "account")
     Optional<Transaction> findByTransactionId(String transactionId);
 }
