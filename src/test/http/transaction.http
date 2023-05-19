@@ -1,0 +1,31 @@
+### use balanace
+POST http://localhost:8080/transaction/use
+Content-Type: application/json
+
+{
+  "userId" :  1,
+  "accountNumber" :  "1000000000",
+  "amount" : 100
+}
+### use balanace2
+POST http://localhost:8080/transaction/use
+Content-Type: application/json
+
+{
+  "userId" :  1,
+  "accountNumber" :  "1000000000",
+  "amount" : 100
+}
+
+### cancel balanace
+POST http://localhost:8080/transaction/cancel
+Content-Type: application/json
+
+{
+  "transactionId" : "53ca5997ba4d4fb9965770dbf8a70dfc",
+  "accountNumber" :  "1000000000",
+  "amount" : 10000
+}
+
+### query transaction
+GET http://localhost:8080/transaction/53ca5997ba4d4fb9965770dbf8a70dfc
