@@ -4,9 +4,6 @@ import com.example.account.type.TransactionResultType;
 import com.example.account.type.TransactionType;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,6 +29,13 @@ public class Transaction extends BaseEntity {
     private Long amount;
 
     private Long balanceSnapshot;
+
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "PARENT_ID")
+    private Transaction parent;
+
+    @OneToOne(fetch = LAZY, mappedBy = "parent")
+    private Transaction child;
 
     private String transactionId;
     private LocalDateTime transactedAt;

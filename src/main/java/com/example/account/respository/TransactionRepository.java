@@ -13,6 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    @EntityGraph(attributePaths = "account")
+    @EntityGraph(attributePaths = {"account"})
     Optional<Transaction> findByTransactionId(String transactionId);
 }

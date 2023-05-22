@@ -9,7 +9,6 @@ import com.example.account.respository.AccountRepository;
 import com.example.account.respository.AccountUserRepository;
 import com.example.account.respository.TransactionRepository;
 import com.example.account.type.AccountStatus;
-import com.example.account.type.ErrorCode;
 import com.example.account.type.TransactionResultType;
 import com.example.account.type.TransactionType;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +68,11 @@ public class TransactionService {
 
         Transaction transaction = transactionRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new AccountException(TRANSACTION_NOT_FOUND));
+
+        if(transaction.getChild() != null){
+            throw new AccountException(TRANSACTION_ALREADY_CANCELED);
+        }
+
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountException(ACCOUNT_NOT_FOUND));
 
@@ -77,7 +81,7 @@ public class TransactionService {
         account.cancelBalance(amount);
 
         return TransactionDto.fromEntity(
-                saveAndGetTransaction(CANCEL, S, amount, account)
+                saveAndGetTransaction(CANCEL, S, amount, account, transaction)
         );
     }
 
@@ -139,6 +143,28 @@ public class TransactionService {
                         .build()
         );
     }
+
+    private Transaction saveAndGetTransaction(
+            TransactionType transactionType,
+            TransactionResultType transactionResultType,
+            Long amount,
+            Account account,
+            Transaction transaction) {
+        return transactionRepository.save(
+                Transaction.builder()
+                        .transactionType(transactionType)
+                        .transactionResultType(transactionResultType)
+                        .account(account)
+                        .amount(amount)
+                        .balanceSnapshot(account.getBalance())
+                        .transactionId(UUID.randomUUID().toString().replace("-", ""))
+                        .transactedAt(LocalDateTime.now())
+                        .parent(transaction)
+                        .build()
+        );
+    }
+
+
 
 
 }
