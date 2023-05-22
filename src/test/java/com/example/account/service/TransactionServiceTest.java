@@ -54,14 +54,8 @@ class TransactionServiceTest {
     private TransactionService transactionService;
 
 
-    /**
-     * 사용자가 없는 경우, 사용자 아이디와 계좌 소유주가 다른 경우,
-     * 계좌가 이미 해지 상태인 경우, 거래금액이 잔액보다 큰 경우,
-     * 거래금액이 너무 작거나 큰 경우 실패 응답
-     */
-
-
     @Test
+    @DisplayName("잔액 사용 성공")
     public void successUseBalance() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -115,7 +109,7 @@ class TransactionServiceTest {
 
 
     @Test
-    @DisplayName("해당 유저 없음 잔액 사용 실패")
+    @DisplayName("잔액 사용 - 사용자가 없는경우 잔액사용을 실패해야 한다")
     public void useBalance_UserNotFound() throws Exception {
         //given
         given(accountUserRepository.findById(anyLong()))
@@ -131,7 +125,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("해당 계좌 없음 잔액 사용 실패")
+    @DisplayName("잔액 사용 - 계좌가 존재하지 않을 경우 잔액사용은 실패해야 한다")
     public void useBalance_AccountNotFound() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -151,8 +145,8 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("계좌 소유주 다름 - 잔액 사용 실패")
-    public void deleteAccount_userUnMatch() throws Exception {
+    @DisplayName("잔액 사용 - 계좌 소유주가 다를 경우 잔액사용은 실패해야 한다")
+    public void useBalance_userUnMatch() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
                 .id(1L)
@@ -176,8 +170,8 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("해지 계좌는 해지할 수 없다")
-    public void deleteAccount_alreadyUnregistered() throws Exception {
+    @DisplayName("잔액 사용 - 해지 계좌는 잔액 사용을 할 수 없다")
+    public void useBalanace_alreadyUnregistered() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
                 .id(1L)
@@ -200,7 +194,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("거래 금액이 잔액보다 큰 경우")
+    @DisplayName("잔액 사용 - 거래 금액이 잔액보다 큰 경우 잔액사용은 실패해야 한다")
     public void exceedAmount_UseBalance() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -266,6 +260,7 @@ class TransactionServiceTest {
 
 
     @Test
+    @DisplayName("잔액 사용 취소 성공")
     public void successCancelBalance() throws Exception {
         LocalDateTime transactedAt = LocalDateTime.now();
         String transactionId = UUID.randomUUID().toString().replace("-", "");
@@ -345,7 +340,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("해당 거래 없음 잔액 사용 취소 실패")
+    @DisplayName("잔액사용 취소 - 거래가 존재하지 않는다면 잔액사용 취소는 실피해야 한다")
     public void cancelTransaction_TransactionNotFound() throws Exception {
         //given
         given(transactionRepository.findByTransactionId(anyString()))
@@ -360,7 +355,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("해당 계좌 없음 잔액 사용 취소 실패")
+    @DisplayName("잔액사용 취소 - 계좌가 존재하지 않는다면 잔액사용 취소는 실패해야 한다")
     public void cancelTransaction_AccountNotFound() throws Exception {
         //given
         Transaction transaction = Transaction.builder().build();
@@ -381,7 +376,7 @@ class TransactionServiceTest {
 
 
     @Test
-    @DisplayName("거래와 계좌가 매칭실패 - 잔액 사용 실패")
+    @DisplayName("잔액사용 취소 - 거래가 해당 계좌의 거래가 아닌경우 잔액사용 취소는 실패해야 한다")
     public void cancelTransaction_AccountUnMatch() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -417,7 +412,7 @@ class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("거래금액과 취소금액이 다름 -  잔액 사용 취소 실패")
+    @DisplayName("잔액사용 취소 - 거래금액과 취소 금액이 다른경우 잔액사용 취소는 실패해야 한다")
     public void cancelTransaction_CancelMustFully() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -493,6 +488,7 @@ class TransactionServiceTest {
 
 
     @Test
+    @DisplayName("거래 확인 성공")
     public void successQueryTransaction() throws Exception{
         //given
         AccountUser user = AccountUser.builder()
@@ -529,7 +525,7 @@ class TransactionServiceTest {
 
 
     @Test
-    @DisplayName("원거래 없음 - 거래 조회 실패")
+    @DisplayName("거래 확인 - 거래가 존재하지 않는경우 거래 확인 실패해야 한다")
     public void queryTransaction_transactionNotFound() throws Exception{
         //given
         given(transactionRepository.findByTransactionId(anyString()))

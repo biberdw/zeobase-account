@@ -1,15 +1,14 @@
 package com.example.account.service;
 
 import com.example.account.domain.Account;
-import com.example.account.type.AccountStatus;
 import com.example.account.domain.AccountUser;
 import com.example.account.dto.AccountDto;
 import com.example.account.exception.AccountException;
 import com.example.account.respository.AccountRepository;
 import com.example.account.respository.AccountUserRepository;
+import com.example.account.type.AccountStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -28,7 +27,9 @@ public class AccountService {
     private final AccountUserRepository accountUserRepository;
 
 
-    /** 계좌 생성 */
+    /**
+     * 계좌 생성
+     */
     public synchronized AccountDto createAccount(Long userId, Long initialBalance) {
         AccountUser accountUser = accountUserRepository.findById(userId)
                 .orElseThrow(() -> new AccountException(USER_NOT_FOUND));
@@ -52,7 +53,9 @@ public class AccountService {
 
     }
 
-    /** 계좌 해지 */
+    /**
+     * 계좌 해지
+     */
     public AccountDto deleteAccount(Long userId, String accountNumber) {
         AccountUser accountUser = getAccountUser(userId);
 
@@ -69,7 +72,9 @@ public class AccountService {
         return AccountDto.fromEntity(account);
     }
 
-    /** 계좌 확인*/
+    /**
+     * 계좌 확인
+     */
     @Transactional(readOnly = true)
     public List<AccountDto> getAccountsByUserId(Long userId) {
         AccountUser accountUser = getAccountUser(userId);

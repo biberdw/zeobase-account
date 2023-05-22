@@ -93,7 +93,6 @@ class AccountControllerTest {
 
     }
 
-
     @Test
     @DisplayName("계좌 확인")
     public void successGetAccountsByUserId() throws Exception {
@@ -128,6 +127,5 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$[2].balance").value(3000));
 
     }
-
 
 }

@@ -1,12 +1,12 @@
 package com.example.account.service;
 
 import com.example.account.domain.Account;
-import com.example.account.type.AccountStatus;
 import com.example.account.domain.AccountUser;
 import com.example.account.dto.AccountDto;
 import com.example.account.exception.AccountException;
 import com.example.account.respository.AccountRepository;
 import com.example.account.respository.AccountUserRepository;
+import com.example.account.type.AccountStatus;
 import com.example.account.type.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,13 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
-import static com.example.account.type.AccountStatus.IN_USE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
@@ -74,6 +71,7 @@ class AccountServiceTest {
     }
 
     @Test
+    @DisplayName("계좌 생성 - 처음 계좌를 생성하면 계좌번호는 1000000000이 돼야 한다")
     public void createFirstAccount() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -103,7 +101,7 @@ class AccountServiceTest {
 
 
     @Test
-    @DisplayName("해당 유저 없음 계좌 생성 실패")
+    @DisplayName("계좌 생성 - 사용자가 존재하지 않을경우 계좌생성이 실패해야 한다")
     public void createAccount_UserNotFound() throws Exception {
         //given
         given(accountUserRepository.findById(anyLong()))
@@ -119,7 +117,7 @@ class AccountServiceTest {
 
 
     @Test
-    @DisplayName("유저 당 최대 계좌는 10개")
+    @DisplayName("계좌 생성 - 유저 당 최대 계좌는 10개를 넘을 수 없다")
     public void createAccount_maxAccountIs10() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -140,6 +138,7 @@ class AccountServiceTest {
 
 
     @Test
+    @DisplayName("계좌 해지 성공")
     public void deleteAccountSuccess() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -168,7 +167,7 @@ class AccountServiceTest {
 
 
     @Test
-    @DisplayName("해당 유저 없음 계좌 해지 실패")
+    @DisplayName("계좌 해지 - 사용자가 존재하지 않을경우 계좌해지는 실패해야 한다")
     public void deleteAccount_UserNotFound() throws Exception {
         //given
         given(accountUserRepository.findById(anyLong()))
@@ -183,7 +182,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("해당 계좌 없음 계좌 해지 실패")
+    @DisplayName("계좌 해지 - 계좌가 존재하지 않을경우 계좌해지는 실패해야 한다")
     public void deleteAccount_AccountNotFound() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -203,7 +202,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("계좌 소유주 다름")
+    @DisplayName("계좌 해지 - 계좌 소유주가 다를 경우 계좌해지는 실패해야 한다")
     public void deleteAccount_userUnMatch() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -228,7 +227,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("해지 계좌는 잔액이 없어야 한다")
+    @DisplayName("계좌 해지 - 해지 계좌는 잔액이 없어야 한다")
     public void deleteAccount_balanceNotEmpty() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -251,7 +250,7 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("해지 계좌는 해지할 수 없다")
+    @DisplayName("계좌 해지 - 이미 해지 계좌는 해지할 수 없다")
     public void deleteAccount_alreadyUnregistered() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
@@ -276,7 +275,8 @@ class AccountServiceTest {
 
 
     @Test
-    public void successGetAccountsByUserId() throws Exception{
+    @DisplayName("계좌 확인 성공")
+    public void successGetAccountsByUserId() throws Exception {
         //given
         AccountUser user = AccountUser.builder()
                 .id(1L)
@@ -323,7 +323,8 @@ class AccountServiceTest {
 
 
     @Test
-    public void failedToGetAccounts() throws Exception{
+    @DisplayName("게좌 확인 - 사용자가 없는 경우 계좌 확인은 실패해야 한다")
+    public void failedToGetAccounts() throws Exception {
         //given
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(Optional.empty());
